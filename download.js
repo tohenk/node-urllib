@@ -33,7 +33,7 @@ const path = require('path');
  */
 class UrlDownload extends UrlFetch {
 
-    onstart({code, headers, options}) {
+    onstart({code, status, headers, options}) {
         let outfile;
         if (options.outfile) {
             outfile = options.outfile;
@@ -48,7 +48,7 @@ class UrlDownload extends UrlFetch {
                 }
             });
         if (typeof options.onstart === 'function') {
-            options.onstart({code, headers});
+            options.onstart({code, status, headers});
         }
     }
 

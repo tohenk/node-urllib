@@ -59,12 +59,14 @@ class UrlFetch {
                 params.headers['content-length'] = data.byteLength;
             }
             const f = () => {
-                /** @type {http} */
+                /** @type {import('http')} */
                 let http;
                 /** @type {Error} */
                 let err;
                 /** @type {number} */
                 let code;
+                /** @type {string} */
+                let status;
                 /** @type {object} */
                 let rheaders;
                 const parsedUrl = new URL(url);
@@ -84,6 +86,7 @@ class UrlFetch {
                 const req = http.request(url, params, res => {
                     rheaders = res.headers;
                     code = res.statusCode;
+                    status = res.statusMessage;
                     res.on('data', chunk => {
                         if (typeof chunk === 'string') {
                             chunk = Buffer.from(chunk);
@@ -114,7 +117,7 @@ class UrlFetch {
                             }
                         }
                     });
-                    this.onstart({code, headers: rheaders, options});
+                    this.onstart({code, status, headers: rheaders, options});
                 });
                 req.on('error', e => {
                     err = e;
@@ -145,13 +148,15 @@ class UrlFetch {
      * Request start handler.
      *
      * @param {object} param0 Response data
-     * @param {number} param0.code Response status
+     * @param {number} param0.code Response code
+     * @param {string} param0.status Response status
      * @param {object} param0.headers Response headers
      * @param {object} param0.options Request options
      */
-    onstart({code, headers, options}) {
+    onstart({code, status, headers, options}) {
         delete this._buffer;
         this._code = code;
+        this._status = status;
         this._headers = headers;
     }
 
